@@ -1,4 +1,3 @@
-
 import cx_Oracle
 from django.views.decorators.csrf import csrf_exempt
 from adrf.views import APIView
@@ -25,7 +24,7 @@ class Adresses(APIView):
 
             cursor.execute("""
                 SELECT *
-                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51385901))
+                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51385501))
                         """)
 
             rows = cursor.fetchall()
@@ -34,7 +33,10 @@ class Adresses(APIView):
                 id = row[0]
                 visual_code = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING, [id])
                 print(f'{id} {visual_code} {row}')
-                # addresses.append(visual_code)
-            # print(addresses)
-            # process_and_save_address_data(addresses)
+                addresses.append(str(id)+ ' , ' +visual_code)
+                print((visual_code+str(id)))
+        # address= ['9726284301 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ак-Ордо 3',
+        #         '9771086801 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ала-Тоо 3',
+        #         '9780843101 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Телевышка']
+        process_and_save_address_data(addresses)
         return Response(status=status.HTTP_200_OK)
