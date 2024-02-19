@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Каскадная Форма Выбора Адреса</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h2>Выберите Адрес</h2>
+ <form method="post" id="addressForm">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Отправить</button>
+    </form>
+
+<script>
+window.onload = function() {
+    document.getElementById("id_city").style.display = 'none';
+    document.getElementById("id_district").style.display = 'none';
+    document.getElementById("id_neighborhood").style.display = 'none';
+    document.getElementById("id_street").style.display = 'none';
+    document.getElementById("id_building").style.display = 'none';
+};
+
+document.getElementById("id_region").onchange = function() {
+    updateNextLevel(this.value, "id_city", "Выберите локацию");
+    resetAndHideSelect("id_district");
+    resetAndHideSelect("id_neighborhood");
+    resetAndHideSelect("id_street");
+    resetAndHideSelect("id_building");
+};
+
+document.getElementById("id_city").onchange = function() {
+    updateNextLevel(this.value, "id_district", "Выберите локацию");
+    resetAndHideSelect("id_neighborhood");
+    resetAndHideSelect("id_street");
+    resetAndHideSelect("id_building");
+};
+
+document.getElementById("id_district").onchange = function() {
+    updateNextLevel(this.value, "id_neighborhood", "Выберите локацию");
+    resetAndHideSelect("id_street");
+    resetAndHideSelect("id_building");
+};
+
+document.getElementById("id_neighborhood").onchange = function() {
+    updateNextLevel(this.value, "id_street", "Выберите локацию");
+    resetAndHideSelect("id_building");
+};
+
+document.getElementById("id_street").onchange = function() {
+    updateNextLevel(this.value, "id_building", "Выберите локацию");
+    // Нет необходимости сбрасывать последующие селекты, так как это последний уровень
+};
+
+// Функция для сброса и скрытия селектов
+function resetAndHideSelect(selectId) {
+    var select = document.getElementById(selectId);
+    select.innerHTML = '';
+    select.style.display = 'none';
+}
+
+// Обновлённая функция для обновления следующего уровня
+function updateNextLevel(parentId, nextLevelId, emptyLabel) {
+    var nextSelect = document.getElementById(nextLevelId);
+    fetch(`/get-children-locations/?parent_id=${parentId}`)
+        .then(response => response.json())
+        .then(data => {
+            nextSelect.innerHTML = `<option value="">${emptyLabel}</option>`;
+            if (data.children.length > 0) {
+                nextSelect.style.display = '';  // Показываем селект, если есть данные
+                data.children.forEach(child => {
+                    var option = new Option(child.name, child.id);
+                    nextSelect.appendChild(option);
+                });
+            } else {
+                nextSelect.style.display = 'none';  // Скрываем селект, если данных нет
+            }
+        });
+}
+// Повторите для district -> neighborhood, neighborhood -> street, street -> building
+</script>
+</body>
+</html>

@@ -1,9 +1,22 @@
 import cx_Oracle
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from adrf.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from webbot.utils import process_and_save_address_data
+from django.http import JsonResponse
+from .forms import AddressForm
+from .models import Location
+
+def address_select_view(request):
+    form = AddressForm()
+    return render(request, 'index.html', {'form': form})
+
+def get_children_locations(request):
+    parent_id = request.GET.get('parent_id')
+    children = Location.objects.filter(parent_id=parent_id).values('id', 'name')
+    return JsonResponse({'children': list(children)})
 
 
 class Adresses(APIView):
@@ -24,7 +37,7 @@ class Adresses(APIView):
 
             cursor.execute("""
                 SELECT *
-                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51385501))
+                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51386201))
                         """)
 
             rows = cursor.fetchall()
@@ -34,9 +47,22 @@ class Adresses(APIView):
                 visual_code = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING, [id])
                 print(f'{id} {visual_code} {row}')
                 addresses.append(str(id)+ ' , ' +visual_code)
-                print((visual_code+str(id)))
-        # address= ['9726284301 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ак-Ордо 3',
-        #         '9771086801 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ала-Тоо 3',
-        #         '9780843101 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Телевышка']
-        process_and_save_address_data(addresses)
+                # print((visual_code+str(id)))
+            process_and_save_address_data(addresses)
+
+        # Откройте файл на запись ('w' означает write-режим, 'encoding='utf-8' гарантирует поддержку кириллицы и других символов)
+
+            # Запись каждого адреса в файл с новой строки
+            # for address in addresses:
+
+
+        # print(f"Данные успешно записаны в файл {file_path}")
+        # address= ['51385501 Кыргызстан, Чуйская обл.',
+        #     '51386301 Кыргызстан, Чуйская обл., г. Бишкек',
+        #     '51445701 Кыргызстан, Чуйская обл., Ысык-Атинский р-н',
+        #     '51445901 Кыргызстан, Чуйская обл., Сокулукский р-н',
+        #     '9726284301 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ак-Ордо 3',
+        #     '9771086801 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ала-Тоо 3',
+        #     '9780843101 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Телевышка']
+
         return Response(status=status.HTTP_200_OK)

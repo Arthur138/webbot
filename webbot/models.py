@@ -11,4 +11,4 @@ class Location(models.Model):
         verbose_name_plural = 'Locations'
 
     def __str__(self):
-        return f'{self.name}, {self.hydra_id}'
+        return f'{self.name}'

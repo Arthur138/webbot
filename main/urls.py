@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from webbot.views import Adresses
+from webbot.views import Adresses, get_children_locations, address_select_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('addresses/', Adresses.as_view())
+    path('', address_select_view, name='select-address'),
+    path('addresses/', Adresses.as_view()),
+    path('get-children-locations/', get_children_locations, name='get-children-locations'),
 ]
