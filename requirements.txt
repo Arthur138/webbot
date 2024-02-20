@@ -1,0 +1,10 @@
+adrf==0.1.4
+asgiref==3.7.2
+async-property==0.2.2
+cx-Oracle==8.3.0
+Django==5.0.2
+djangorestframework==3.14.0
+pytz==2024.1
+sqlparse==0.4.4
+typing_extensions==4.9.0
+tzdata==2024.1
