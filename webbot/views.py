@@ -9,9 +9,11 @@ from django.http import JsonResponse
 from .forms import AddressForm
 from .models import Location
 
+
 def address_select_view(request):
     form = AddressForm()
     return render(request, 'index.html', {'form': form})
+
 
 def get_children_locations(request):
     parent_id = request.GET.get('parent_id')
@@ -47,22 +49,5 @@ class Adresses(APIView):
                 visual_code = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING, [id])
                 print(f'{id} {visual_code} {row}')
                 addresses.append(str(id)+ ' , ' +visual_code)
-                # print((visual_code+str(id)))
             process_and_save_address_data(addresses)
-
-        # Откройте файл на запись ('w' означает write-режим, 'encoding='utf-8' гарантирует поддержку кириллицы и других символов)
-
-            # Запись каждого адреса в файл с новой строки
-            # for address in addresses:
-
-
-        # print(f"Данные успешно записаны в файл {file_path}")
-        # address= ['51385501 Кыргызстан, Чуйская обл.',
-        #     '51386301 Кыргызстан, Чуйская обл., г. Бишкек',
-        #     '51445701 Кыргызстан, Чуйская обл., Ысык-Атинский р-н',
-        #     '51445901 Кыргызстан, Чуйская обл., Сокулукский р-н',
-        #     '9726284301 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ак-Ордо 3',
-        #     '9771086801 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Ала-Тоо 3',
-        #     '9780843101 Кыргызстан, Чуйская обл., г. Бишкек, ж/м. Телевышка']
-
         return Response(status=status.HTTP_200_OK)
