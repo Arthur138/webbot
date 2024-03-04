@@ -16,50 +16,25 @@ import asyncio
 from telegraph import Telegraph
 from rest_framework.parsers import MultiPartParser, FormParser
 
-class Zayavka(APIView):
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        print(data)
-        print('---------')
-        bx_region = data.get('region2', 'Значение по умолчанию')
-        bx_district = data.get('district2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_tariff = data.get('tariff', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        description = data.get('description', 'Значение по умолчанию')
-        username = data.get('username', 'Значение по умолчанию')
-        userSirName = data.get('userSirName', 'Значение по умолчанию')
-        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
-        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
-        address = data.get('address', 'Значение по умолчанию')
-
-
-
-        return Response({"message": "Данные получены"}, status=200)
-
-
 async def application_internet():
 
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
 
     b = Bitrix(webhook)
     method = 'crm.deal.add'
-    test = {'fields': {
-        'TITLE': 'Заявка на интернет',
+    test = {'fields':{
+        'TITLE': 'Заявка на интnернет',
         'TYPE_ID':6667,
-        'UF_CRM_1674993837284': f'странный адрес',  # adres  создает
-        'UF_CRM_1673408541': f'strange location',  #  photo location
-        'UF_CRM_1673408700': f'passport',  # passport1
+        'UF_CRM_1674993837284':'aseh',  # adres  создает
+        'UF_CRM_1673408541': f'strange ,  #  photo location
+        'UF_CRM_1673408700': f'asdfgh',  # passport1
         'UF_CRM_1673408725': f'passport2',  # passport2
         'UF_CRM_1669625413673': f'asdfg',  # oblasti Иссык-Кульская Джалал-Абадская
         'UF_CRM_1673255771': f'1751111111',  #  Лицевой счет         это идет с гидры 
         'UF_CRM_1673258743852': f'description', # Описание  заявки  
         'UF_CRM_1669634833014':f'asdfgh', #  Роутер абонента
         'UF_CRM_1669625771519': f'Оптимальный', #  тариф 
-        'UF_CRM_1669625805213': f'strange tarif', # ТВ тариф
+        'UF_CRM_1669625805213': f'{bx_tv}', # ТВ тариф
         'UF_CRM_1673251826':'asdfgh', # оплата обонента
         'UF_CRM_1673251960':'фывапркпк',   #  provider
         'UF_CRM_1695971054382': f'asked to create',  # Лицевой  счет УР  это идет с гидры 
@@ -72,11 +47,15 @@ async def application_internet():
 
     return test2
 
+
+asyncio.run(application_internet())
+
+
 # asyncio.run(application_internet())
 
 class Bx_router(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960', 'UF_CRM_1669625805213']
+        fields_list = ['UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960', 'UF_CRM_1669625805213','UF_CRM_1669625805213']
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = []
         for field in fields_list:
@@ -135,7 +114,7 @@ class UploadPassportView(APIView):
 
 class bx(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1675072231', 'UF_CRM_1675071171', 'UF_CRM_1675070693', 'UF_CRM_1675071012', 'UF_CRM_1675070436' , 'UF_CRM_1675071353']
+        fields_list = ['UF_CRM_1675072231', 'UF_CRM_1675071171', 'UF_CRM_1675070693', 'UF_CRM_1675071012', 'UF_CRM_1675070436' ]
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = {}
         region_mapping = {
