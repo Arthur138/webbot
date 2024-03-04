@@ -1,6 +1,5 @@
 from fast_bitrix24 import Bitrix
 import cx_Oracle
-
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from adrf.views import APIView
@@ -16,6 +15,31 @@ import requests
 import asyncio
 from telegraph import Telegraph
 from rest_framework.parsers import MultiPartParser, FormParser
+
+class Zayavka(APIView):
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        print(data)
+        print('---------')
+        bx_region = data.get('region2', 'Значение по умолчанию')
+        bx_district = data.get('district2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_tariff = data.get('tariff', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        description = data.get('description', 'Значение по умолчанию')
+        username = data.get('username', 'Значение по умолчанию')
+        userSirName = data.get('userSirName', 'Значение по умолчанию')
+        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
+        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
+        address = data.get('address', 'Значение по умолчанию')
+
+
+
+        return Response({"message": "Данные получены"}, status=200)
+
 
 async def application_internet():
 
@@ -48,15 +72,11 @@ async def application_internet():
 
     return test2
 
-
-asyncio.run(application_internet())
-
-
-
+# asyncio.run(application_internet())
 
 class Bx_router(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960']
+        fields_list = ['UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960', 'UF_CRM_1669625805213']
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = []
         for field in fields_list:
@@ -67,12 +87,8 @@ class Bx_router(APIView):
                     if field in id_field and field_value['type'] == 'enumeration':
                         items = field_value['items']
                         response_data.append(items)
-
+        # print(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
-
-
-
-
 
 class UploadPassportView(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -116,18 +132,6 @@ class UploadPassportView(APIView):
             return {'title': title, 'image_path': full_path, 'page_url': page_url}
         else:
             raise Exception('Failed to upload image to Telegraph')
-
-
-
-
-
-class Zayavka(APIView):
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        print(data)
-        return Response({"message": "Данные получены"}, status=200)
-
 
 class bx(APIView):
     def get(self, request):

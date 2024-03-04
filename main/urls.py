@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from webbot.views import Adresses, address_select_view, RegionListView, GetChildrenLocations, get_children_locations, \
+    bx, Zayavka, RegisterView , LoginView, LogoutView
 from webbot.views import Adresses, address_select_view, RegionListView, GetChildrenLocations, get_children_locations, bx, Zayavka, RegisterView , LoginView , Bx_router , UploadPassportView
 
 urlpatterns = [
@@ -29,6 +31,8 @@ urlpatterns = [
     path('zayavka/', Zayavka.as_view()),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+
     path('send-data-router/', Bx_router.as_view(), name='send-data-router'),
     path('upload-passport/', UploadPassportView.as_view(), name='upload-passport'),
 ]

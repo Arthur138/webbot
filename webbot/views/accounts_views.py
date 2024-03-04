@@ -6,6 +6,16 @@ from webbot.models import Supervizor
 from webbot.serializers import SupervizorSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+class LogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        request.user.auth_token.delete()
+        return Response({"message": "Пользователь успешно вышел из системы"}, status=status.HTTP_200_OK)
 
 class RegisterView(APIView):
     def get(self, request):
