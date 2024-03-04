@@ -16,11 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from webbot.views import Adresses, get_children_locations, address_select_view
+from webbot.views import Adresses, address_select_view, RegionListView, GetChildrenLocations, get_children_locations, \
+    bx, Zayavka, RegisterView , LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', address_select_view, name='select-address'),
     path('addresses/', Adresses.as_view()),
     path('get-children-locations/', get_children_locations, name='get-children-locations'),
+    path('region_list/', RegionListView.as_view(), name='region-list'),
+    path('get_child/', GetChildrenLocations.as_view()),
+    path('bx/', bx.as_view()),
+    path('zayavka/', Zayavka.as_view()),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+
 ]
