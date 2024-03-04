@@ -1,4 +1,6 @@
+from fast_bitrix24 import Bitrix
 import cx_Oracle
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from adrf.views import APIView
@@ -11,6 +13,113 @@ from webbot.forms import AddressForm
 from webbot.models import Location
 from webbot.serializers import LocationSerializer
 import requests
+import asyncio
+from telegraph import Telegraph
+from rest_framework.parsers import MultiPartParser, FormParser
+
+async def application_internet():
+
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+
+    b = Bitrix(webhook)
+    method = 'crm.deal.add'
+    test = {'fields': {
+        'TITLE': 'Заявка на интернет',
+        'TYPE_ID':6667,
+        'UF_CRM_1674993837284': f'странный адрес',  # adres  создает
+        'UF_CRM_1673408541': f'strange location',  #  photo location
+        'UF_CRM_1673408700': f'passport',  # passport1
+        'UF_CRM_1673408725': f'passport2',  # passport2
+        'UF_CRM_1669625413673': f'asdfg',  # oblasti Иссык-Кульская Джалал-Абадская
+        'UF_CRM_1673255771': f'1751111111',  #  Лицевой счет         это идет с гидры 
+        'UF_CRM_1673258743852': f'description', # Описание  заявки  
+        'UF_CRM_1669634833014':f'asdfgh', #  Роутер абонента
+        'UF_CRM_1669625771519': f'Оптимальный', #  тариф 
+        'UF_CRM_1669625805213': f'strange tarif', # ТВ тариф
+        'UF_CRM_1673251826':'asdfgh', # оплата обонента
+        'UF_CRM_1673251960':'фывапркпк',   #  provider
+        'UF_CRM_1695971054382': f'asked to create',  # Лицевой  счет УР  это идет с гидры 
+        'CATEGORY_ID': 33,  # oblasti
+
+    }}
+
+
+    test2 = await b.call(method, test,raw=False)
+
+    return test2
+
+
+asyncio.run(application_internet())
+
+
+
+
+class Bx_router(APIView):
+    def get(self, request):
+        fields_list = ['UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960']
+        webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+        response_data = []
+        for field in fields_list:
+            response = requests.get(f'{webhook}crm.deal.fields')  
+            if response.status_code == 200:
+                fields_info = response.json()
+                for id_field, field_value in fields_info.get('result', {}).items():
+                    if field in id_field and field_value['type'] == 'enumeration':
+                        items = field_value['items']
+                        response_data.append(items)
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+
+
+
+class UploadPassportView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        telegraph = Telegraph(access_token="340810480920e8986d089f2d8b5f55abd26da83d3ea8ae78db100d70946a")
+
+        responses = []
+        for i in range(1, 4):  # Обработка трех файлов
+            file_key = f'file{i}'
+            file = request.FILES.get(file_key)
+            if file:
+                try:
+                    response = self.upload_and_create_page(file, telegraph, f'Passport Image {i}')
+                    responses.append(response)
+                except Exception as e:
+                    return Response({'message': f'Failed to upload {file_key}: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'message': f'{file_key} is missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Формирование итогового ответа
+        return Response({
+            'message': 'Images uploaded successfully',
+            'data': responses
+        }, status=status.HTTP_200_OK)
+
+    def upload_and_create_page(self, file, telegraph, title):
+        response = requests.post(
+            'https://telegra.ph/upload',
+            files={'file': (file.name, file, file.content_type)}
+        )
+        if response.status_code == 200:
+            path = response.json()[0]['src']
+            full_path = f'https://telegra.ph{path}'
+
+            page_response = telegraph.create_page(
+                title=title,
+                html_content=f"<p>{title}</p><img src='{full_path}'/>"
+            )
+            page_url = f'https://telegra.ph/{page_response["path"]}'
+            return {'title': title, 'image_path': full_path, 'page_url': page_url}
+        else:
+            raise Exception('Failed to upload image to Telegraph')
+
+
+
+
 
 class Zayavka(APIView):
     @csrf_exempt
@@ -101,3 +210,20 @@ class Adresses(APIView):
                 addresses.append(str(id)+ ' , ' +visual_code)
             process_and_save_address_data(addresses)
         return Response(status=status.HTTP_200_OK)
+    
+
+
+
+
+# async def sms_bitrix_teh(deal_id, n_customer_id):
+#     b = BitrixAsync(webhook)
+#     method = 'crm.timeline.comment.add'
+#     params = {'fields': {
+#             "COMMENT": f"Создан абонент:https://hydra.snt.kg:8000/subjects/persons/edit/{n_customer_id}"
+#             "ENTITY_TYPE": 'deal',
+#             'ENTITY_ID': deal_id,
+
+
+#         }}
+#     test = await b.call(method, params)
+
