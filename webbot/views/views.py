@@ -63,9 +63,9 @@ class Zayavka(APIView):
                 'TITLE': 'Заявка на интернет',
                 'TYPE_ID':6667,
                 'UF_CRM_1674993837284': address,
-                'UF_CRM_1673408541': location_screenshot, # ссылка на локацию
-                'UF_CRM_1673408700': passport1, #  ссылка на пасспорт
-                'UF_CRM_1673408725': passport2, # Ссылка  на   паспорт2
+                'UF_CRM_1673408541': location_screenshot, # ссылка на локацию ^^
+                'UF_CRM_1673408700': passport1, #  ссылка на пасспорт ^^ 
+                'UF_CRM_1673408725': passport2, # Ссылка  на   паспорт2 ^^
                 'UF_CRM_1669625413673': bx_region, # области  Иссык-Кульская
                 'UF_CRM_1673255771': userAdditionalPhoneNumber, # Лицевой счет **
                 'UF_CRM_1673258743852': description, # описание заявки ^^ 
