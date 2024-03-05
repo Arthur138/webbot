@@ -54,18 +54,18 @@ class Zayavka(APIView):
                 'TITLE': 'Заявка на интернет',
                 'TYPE_ID':6667,
                 'UF_CRM_1674993837284': address,
-                'UF_CRM_1673408541': username,
-                'UF_CRM_1673408700': userSirName,
-                'UF_CRM_1673408725': userPhoneNumber,
-                'UF_CRM_1669625413673': bx_region,
-                'UF_CRM_1673255771': userAdditionalPhoneNumber,
-                'UF_CRM_1673258743852': description,
-                'UF_CRM_1669634833014': bx_router,
-                'UF_CRM_1669625771519': bx_tariff,
-                'UF_CRM_1669625805213': bx_tv,
-                'UF_CRM_1673251826': bx_order_status,
-                'UF_CRM_1673251960': bx_provider_from,
-                'UF_CRM_1695971054382': bx_district,
+                'UF_CRM_1673408541': username, # ссылка на локацию
+                'UF_CRM_1673408700': userSirName, #  ссылка на пасспорт
+                'UF_CRM_1673408725': userPhoneNumber, # Ссылка  на   паспорт2
+                'UF_CRM_1669625413673': bx_region, # области  Иссык-Кульская
+                'UF_CRM_1673255771': userAdditionalPhoneNumber, # Лицевой счет **
+                'UF_CRM_1673258743852': description, # описание заявки ^^ 
+                'UF_CRM_1669634833014': bx_router, #  Роутер ^^ 
+                'UF_CRM_1669625771519': bx_tariff, # Тариф ^^ 
+                'UF_CRM_1669625805213': bx_tv, # ТВ ^^ 
+                'UF_CRM_1673251826': bx_order_status, #  Статус оплаты ^^
+                'UF_CRM_1673251960': bx_provider_from, #  Переход от  какого провайдера ^^ 
+                'UF_CRM_1695971054382': bx_district, #  Лицевой  счет УР ^^ 
                 'CATEGORY_ID': 33
             }}
             test2 = await b.call(method, test, raw=False)
