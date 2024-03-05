@@ -57,10 +57,10 @@ class Zayavka(APIView):
                                         bx_provider_from, description, username, userSirName, userPhoneNumber, 
                                         userAdditionalPhoneNumber, address , hydra_address , exactaddress , passport1 , passport2 , location_screenshot):
             webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-            b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
+            b = Bitrix(webhook)  
             method = 'crm.deal.add'
             test = {'fields':{
-                'TITLE': 'Заявка на интернет',
+                'TITLE': 'Заявка на интернет', 
                 'TYPE_ID':6667,
                 'UF_CRM_1674993837284': address,
                 'UF_CRM_1673408541': location_screenshot, # ссылка на локацию ^^
