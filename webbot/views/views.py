@@ -37,39 +37,39 @@ class Zayavka(APIView):
         userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
         userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
         address = data.get('address', 'Значение по умолчанию')
-        
-        asyncio.run(application_internet(
-            bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv, 
-            bx_provider_from, description, username, userSirName, userPhoneNumber, 
-            userAdditionalPhoneNumber, address
-        ))
+        last_key = list(address.keys())[-1]
+        last_value = address[last_key]
+        hydra_address = last_value['hydra_id']
+        exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
+        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
+        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
+        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
 
-        async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv, 
-                                        bx_provider_from, description, username, userSirName, userPhoneNumber, 
-                                        userAdditionalPhoneNumber, address):
-            webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-            b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
-            method = 'crm.deal.add'
-            test = {'fields':{
-                'TITLE': 'Заявка на интернет',
-                'TYPE_ID':6667,
-                'UF_CRM_1674993837284': address,
-                'UF_CRM_1673408541': username,
-                'UF_CRM_1673408700': userSirName,
-                'UF_CRM_1673408725': userPhoneNumber,
-                'UF_CRM_1669625413673': bx_region,
-                'UF_CRM_1673255771': userAdditionalPhoneNumber,
-                'UF_CRM_1673258743852': description,
-                'UF_CRM_1669634833014': bx_router,
-                'UF_CRM_1669625771519': bx_tariff,
-                'UF_CRM_1669625805213': bx_tv,
-                'UF_CRM_1673251826': bx_order_status,
-                'UF_CRM_1673251960': bx_provider_from,
-                'UF_CRM_1695971054382': bx_district,
-                'CATEGORY_ID': 33
-            }}
-            test2 = await b.call(method, test, raw=False)
-            return test2
+        print(bx_district)
+
+        webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+        b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
+        method = 'crm.deal.add'
+        test = {'fields':{
+            'TITLE': 'Заявка на интернет',
+            'TYPE_ID':6667,
+            'UF_CRM_1674993837284': bx_district,
+            'UF_CRM_1673408541': username,
+            'UF_CRM_1673408700': userSirName,
+            'UF_CRM_1673408725': userPhoneNumber,
+            'UF_CRM_1669625413673': bx_region,
+            'UF_CRM_1673255771': userAdditionalPhoneNumber,
+            'UF_CRM_1673258743852': description,
+            'UF_CRM_1669634833014': bx_router,
+            'UF_CRM_1669625771519': bx_tariff,
+            'UF_CRM_1669625805213': bx_tv,
+            'UF_CRM_1673251826': bx_order_status,
+            'UF_CRM_1673251960': bx_provider_from,
+            'UF_CRM_1695971054382': bx_district,
+            'CATEGORY_ID': 33
+        }}
+        test2 = b.call(method, test, raw=False)
+        print(test2)
         return Response({"message": "Данные получены"}, status=200)
 
 class Bx_router(APIView):
@@ -215,7 +215,13 @@ class Adresses(APIView):
             process_and_save_address_data(addresses)
         return Response(status=status.HTTP_200_OK)
     
-
+        last_key = list(address.keys())[-1]
+        last_value = address[last_key]
+        hydra_address = last_value['hydra_id']
+        exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
+        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
+        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
+        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
 
 
 
