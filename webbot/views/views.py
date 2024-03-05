@@ -17,6 +17,33 @@ from telegraph import Telegraph
 from rest_framework.parsers import MultiPartParser, FormParser
 
 
+async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
+                               bx_provider_from, description,
+                               userAdditionalPhoneNumber, address, passport1, passport2,
+                               location_screenshot):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+    b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
+    method = 'crm.deal.add'
+    test = {'fields': {
+        'TITLE': 'Заявка на интернет',
+        'TYPE_ID': 6667,
+        'UF_CRM_1674993837284': bx_district,
+        'UF_CRM_1673408541': location_screenshot,  # ссылка на локацию ^^
+        'UF_CRM_1673408700': passport1,  # ссылка на пасспорт ^^
+        'UF_CRM_1673408725': passport2,  # Ссылка  на   паспорт2 ^^
+        'UF_CRM_1669625413673': bx_region,  # области  Иссык-Кульская
+        'UF_CRM_1673255771': userAdditionalPhoneNumber,  # Лицевой счет **
+        'UF_CRM_1673258743852': description,  # описание заявки ^^
+        'UF_CRM_1669634833014': bx_router,  # Роутер ^^
+        'UF_CRM_1669625771519': bx_tariff,  # Тариф ^^
+        'UF_CRM_1669625805213': bx_tv,  # ТВ ^^
+        'UF_CRM_1673251826': bx_order_status,  # Статус оплаты ^^
+        'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
+        'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
+        'CATEGORY_ID': 33
+    }}
+    test2 = await b.call(method, test, raw=False)
+    return test2
 
 class Zayavka(APIView):
     @csrf_exempt
@@ -46,39 +73,14 @@ class Zayavka(APIView):
         location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
 
         print(bx_district)
-        
+
         asyncio.run(application_internet(
-            bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv, 
-            bx_provider_from, description, username, userSirName, userPhoneNumber, 
+            bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
+            bx_provider_from, description,
             userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot
         ))
 
-        async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv, 
-                                        bx_provider_from, description, username, userSirName, userPhoneNumber, 
-                                        userAdditionalPhoneNumber, address , hydra_address , exactaddress , passport1 , passport2 , location_screenshot):
-            webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-            b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
-            method = 'crm.deal.add'
-            test = {'fields':{
-                'TITLE': 'Заявка на интернет',
-                'TYPE_ID':6667,
-                'UF_CRM_1674993837284': address,
-                'UF_CRM_1673408541': location_screenshot, # ссылка на локацию ^^
-                'UF_CRM_1673408700': passport1, #  ссылка на пасспорт ^^ 
-                'UF_CRM_1673408725': passport2, # Ссылка  на   паспорт2 ^^
-                'UF_CRM_1669625413673': bx_region, # области  Иссык-Кульская
-                'UF_CRM_1673255771': userAdditionalPhoneNumber, # Лицевой счет **
-                'UF_CRM_1673258743852': description, # описание заявки ^^ 
-                'UF_CRM_1669634833014': bx_router, #  Роутер ^^ 
-                'UF_CRM_1669625771519': bx_tariff, # Тариф ^^ 
-                'UF_CRM_1669625805213': bx_tv, # ТВ ^^ 
-                'UF_CRM_1673251826': bx_order_status, #  Статус оплаты ^^
-                'UF_CRM_1673251960': bx_provider_from, #  Переход от  какого провайдера ^^ 
-                'UF_CRM_1695971054382': bx_district, #  Лицевой  счет УР ^^ 
-                'CATEGORY_ID': 33
-            }}
-            test2 = await b.call(method, test, raw=False)
-            return test2
+
         return Response({"message": "Данные получены"}, status=200)
 
 class Bx_router(APIView):
