@@ -22,13 +22,14 @@ from django.contrib.auth import get_user_model
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
                                bx_provider_from, description,
                                userAdditionalPhoneNumber, address, passport1, passport2,
-                               location_screenshot):
+                               location_screenshot, region_path_id):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
     method = 'crm.deal.add'
     test = {'fields': {
         'TITLE': 'Заявка на интернет',
         'TYPE_ID': 6667,
+
         'UF_CRM_1674993837284': bx_district,
         'UF_CRM_1673408541': location_screenshot,  # ссылка на локацию ^^
         'UF_CRM_1673408700': passport1,  # ссылка на пасспорт ^^
@@ -42,7 +43,7 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1673251826': bx_order_status,  # Статус оплаты ^^
         'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
         'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
-        'CATEGORY_ID': 33
+        'CATEGORY_ID': region_path_id
     }}
     test2 = await b.call(method, test, raw=False)
     print(test2)
@@ -55,6 +56,7 @@ class Zayavka(APIView):
         print(data)
         print('---------')
         bx_region = data.get('region2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_region_value = data.get('region2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
         bx_district = data.get('district2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
         bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
@@ -74,11 +76,21 @@ class Zayavka(APIView):
         passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
         passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
         location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
-        print(bx_region)
+        region_id_mapping = {
+            'Иссык-Кульская': 29,
+            'Джалал-Абадская': 33,
+            'Таласская': 30,
+            'Нарынская': 31,
+            'Чуйская': 23,
+            'Ошская': 32,
+        }
+        region_path_id = region_id_mapping[bx_region_value]
+
+        # print(bx_region)
         bx_id = asyncio.run(application_internet(
             bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
             bx_provider_from, description,
-            userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot
+            userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot,region_path_id
         ))
         print(bx_id)
 
@@ -97,7 +109,7 @@ class Bx_router(APIView):
                     if field in id_field and field_value['type'] == 'enumeration':
                         items = field_value['items']
                         response_data.append(items)
-        # print(response_data)
+        print(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
 
 
