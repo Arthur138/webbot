@@ -15,6 +15,8 @@ import requests
 import asyncio
 from telegraph import Telegraph
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model
 
 
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
@@ -43,6 +45,7 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'CATEGORY_ID': 33
     }}
     test2 = await b.call(method, test, raw=False)
+    print(test2)
     return test2
 
 class Zayavka(APIView):
@@ -51,8 +54,8 @@ class Zayavka(APIView):
         data = request.data
         print(data)
         print('---------')
-        bx_region = data.get('region2', 'Значение по умолчанию')
-        bx_district = data.get('district2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_region = data.get('region2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
+        bx_district = data.get('district2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
         bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_tariff = data.get('tariff', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
@@ -71,21 +74,19 @@ class Zayavka(APIView):
         passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
         passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
         location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
-
-        print(bx_district)
-
-        asyncio.run(application_internet(
+        print(bx_region)
+        bx_id = asyncio.run(application_internet(
             bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
             bx_provider_from, description,
             userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot
         ))
-
+        print(bx_id)
 
         return Response({"message": "Данные получены"}, status=200)
 
 class Bx_router(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960', 'UF_CRM_1669625805213','UF_CRM_1669625805213']
+        fields_list = ['UF_CRM_1669625413673','UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960', 'UF_CRM_1669625805213','UF_CRM_1669625805213']
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = []
         for field in fields_list:
@@ -146,7 +147,7 @@ class UploadPassportView(APIView):
 
 class bx(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1675072231', 'UF_CRM_1675071171', 'UF_CRM_1675070693', 'UF_CRM_1675071012', 'UF_CRM_1675070436' ]
+        fields_list = ['UF_CRM_1675072231', 'UF_CRM_1675071171', 'UF_CRM_1675070693', 'UF_CRM_1675071012', 'UF_CRM_1675070436', 'UF_CRM_1675071353' ]
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = {}
         region_mapping = {
@@ -213,7 +214,7 @@ class Adresses(APIView):
 
             cursor.execute("""
                 SELECT *
-                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51385501))
+                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51386201))
                         """)
 
             rows = cursor.fetchall()
