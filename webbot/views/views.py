@@ -47,12 +47,6 @@ class Zayavka(APIView):
 
         print(bx_district)
 
-        asyncio.run(application_internet(
-            bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
-            bx_provider_from, description,
-            userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot
-        ))
-
 
         return Response({"message": "Данные получены"}, status=200)
 
