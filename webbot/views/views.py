@@ -42,11 +42,43 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1673251826': bx_order_status,  # Статус оплаты ^^
         'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
         'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
+        'ASSIGNED_BY_ID': 87 , 
         'CATEGORY_ID': 33
     }}
     test2 = await b.call(method, test, raw=False)
     print(test2)
     return test2
+
+
+async def contact_registr(name, lastname, mobile,mobile2, who):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+
+    b = Bitrix(webhook)
+    method = 'crm.contact.add'
+    params = {'fields': {
+        'NAME': f'{name}',
+        'LAST_NAME': f'{lastname}',
+        'ASSIGNED_BY_ID': 87,
+        'PHONE': [{"VALUE": f'{mobile}', "VALUE_TYPE": "WORK"},{"VALUE": f'{mobile2}', "VALUE_TYPE": "WORK"}],
+
+    }}
+    test = await b.call(method, params)
+    return test
+
+
+async def contact_registr_office_bot(name, lastname, mobile2, who):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+    b = Bitrix(webhook)
+    method = 'crm.contact.add'
+    params = {'fields': {
+        'NAME': f'{name}',
+        'LAST_NAME': f'{lastname}',
+        'ASSIGNED_BY_ID': 87,
+        'PHONE': [{"VALUE": f'{mobile2}', "VALUE_TYPE": "WORK"}],
+    }}
+    test = await b.call(method, params)
+    return test
+
 
 class Zayavka(APIView):
     @csrf_exempt
