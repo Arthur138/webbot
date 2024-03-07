@@ -50,20 +50,6 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
     return test2
 
 
-async def contact_registr(name, lastname, mobile,mobile2, who):
-    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-
-    b = Bitrix(webhook)
-    method = 'crm.contact.add'
-    params = {'fields': {
-        'NAME': f'{name}',
-        'LAST_NAME': f'{lastname}',
-        'ASSIGNED_BY_ID': 87,
-        'PHONE': [{"VALUE": f'{mobile}', "VALUE_TYPE": "WORK"},{"VALUE": f'{mobile2}', "VALUE_TYPE": "WORK"}],
-
-    }}
-    test = await b.call(method, params)
-    return test
 
 
 async def contact_registr_office_bot(name, lastname, mobile2, who):
