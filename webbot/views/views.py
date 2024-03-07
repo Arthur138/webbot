@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from fast_bitrix24 import Bitrix
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -25,12 +24,27 @@ from urllib import parse as urllib_parse
 import cx_Oracle
 
 
+
+async def contact_registr(name, lastname, mobile, mobile2):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+    b = Bitrix(webhook)
+    method = 'crm.contact.add'
+    params = {'fields': {
+        'NAME': name,
+        'LAST_NAME': lastname,
+        'ASSIGNED_BY_ID': 87,
+        'PHONE': [{"VALUE": mobile, "VALUE_TYPE": "WORK"}, {"VALUE": mobile2, "VALUE_TYPE": "WORK"}],
+    }}
+    response = await b.call(method, params)
+    return response
+
+
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
                                bx_provider_from, description,
                                userAdditionalPhoneNumber, address, passport1, passport2,
                                location_screenshot, region_path_id):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-    b = Bitrix(webhook)  # Предполагается, что вы импортировали Bitrix из вашего модуля
+    b = Bitrix(webhook)  
     method = 'crm.deal.add'
     test = {'fields': {
         'TITLE': 'Заявка на интернет',
@@ -58,20 +72,6 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
 
 
 
-async def contact_registr_office_bot(name, lastname, mobile2, who):
-    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-    b = Bitrix(webhook)
-    method = 'crm.contact.add'
-    params = {'fields': {
-        'NAME': f'{name}',
-        'LAST_NAME': f'{lastname}',
-        'ASSIGNED_BY_ID': 87,
-        'PHONE': [{"VALUE": f'{mobile2}', "VALUE_TYPE": "WORK"}],
-    }}
-    test = await b.call(method, params)
-    return test
-
-
 class Zayavka(APIView):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
@@ -87,10 +87,10 @@ class Zayavka(APIView):
         bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         description = data.get('description', 'Значение по умолчанию')
-        username = data.get('username', 'Значение по умолчанию')
-        userSirName = data.get('userSirName', 'Значение по умолчанию')
-        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
-        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
+        username = 'username', 'Значение по умолчанию'
+        userSirName = 'userSirName', 'Значение по умолчанию'
+        userPhoneNumber = 'userPhoneNumber', 'Значение по умолчанию'
+        userAdditionalPhoneNumber = 'userAdditionalPhoneNumber', 'Значение по умолчанию'
         address = data.get('address', 'Значение по умолчанию')
         hydra_region_id = address.get('region', 'Значение по умолчанию').get('hydra_id', 'Значение по умолчанию')
         last_key = list(address.keys())[-1]
@@ -99,7 +99,10 @@ class Zayavka(APIView):
         exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
         passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
         passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
+        contact_result = asyncio.run(contact_registr(username, userSirName, userPhoneNumber, userAdditionalPhoneNumber, ))
+        contact_id = contact_result
         location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
+
 
         region_id_mapping = {
             'Иссык-Кульская': 29,
@@ -470,7 +473,7 @@ class Zayavka(APIView):
                                         }
 
                                     )
-        return Response({"message": "Данные получены"}, status=200)
+        return Response({"contact_id":contact_id }, status=200)
 
 class Bx_router(APIView):
     def get(self, request):
