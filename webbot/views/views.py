@@ -24,7 +24,17 @@ from http import HTTPStatus
 from urllib import parse as urllib_parse
 import cx_Oracle
 
-
+async def deal_hydrals_update(deal_id,hydra_ls):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+    b = BitrixAsync(webhook)
+    method = 'crm.deal.update'
+    params = {
+            'ID': f'{deal_id}',
+            'fields': {
+                'UF_CRM_1673255771': f'{hydra_ls}'}
+    }
+    test = await b.call(method, params)
+    return test
 
 async def contact_registr(name, lastname, mobile, mobile2):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
@@ -481,6 +491,8 @@ class Zayavka(APIView):
                                     organizations_url = urllib_parse.urljoin(hoper_url,
                                                                              f"subjects/customers/{n_subject_id}/comments/")
                                     asyncio.run(contact_ls(n_subject_id, hydra_ls, contact_id, abon_address_full))
+                                    asyncio.run(deal_hydrals_update(bx_id, hydra_ls,))
+
                                     response = http_session.post(
                                         organizations_url,
                                         timeout=http_timeout,
