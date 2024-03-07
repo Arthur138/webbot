@@ -1,5 +1,6 @@
 from datetime import datetime
-from fast_bitrix24 import Bitrix
+
+from fast_bitrix24 import Bitrix, BitrixAsync
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from adrf.views import APIView
@@ -38,13 +39,27 @@ async def contact_registr(name, lastname, mobile, mobile2):
     response = await b.call(method, params)
     return response
 
+async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+    b = BitrixAsync(webhook)
+    method = 'crm.contact.update'
+    params = {
+            'ID': f'{contact_id}',
+            'fields': {
+                'UF_CRM_1687325219482': f'{hydra_ls}',
+                'UF_CRM_1674820632467': f'{n_subject_id}',
+                'UF_CRM_1687325330978': f'{adress_abon}'
+            }
+    }
+    test = await b.call(method, params)
+    return test
 
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
                                bx_provider_from, description,
                                userAdditionalPhoneNumber, address, passport1, passport2,
-                               location_screenshot, region_path_id):
+                               location_screenshot, region_path_id, contact_id):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
-    b = Bitrix(webhook)  
+    b = Bitrix(webhook)
     method = 'crm.deal.add'
     test = {'fields': {
         'TITLE': 'Заявка на интернет',
@@ -63,7 +78,8 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1673251826': bx_order_status,  # Статус оплаты ^^
         'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
         'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
-        'CATEGORY_ID': region_path_id
+        'CATEGORY_ID': region_path_id,
+        'CONTACT_ID': contact_id
     }}
     test2 = await b.call(method, test, raw=False)
     print(test2)
@@ -78,6 +94,10 @@ class Zayavka(APIView):
         data = request.data
         print(data)
         print('---------')
+        user = request.user
+        print(user)
+        print('---------')
+
         bx_region = data.get('region2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_region_value = data.get('region2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
         bx_district = data.get('district2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
@@ -87,10 +107,10 @@ class Zayavka(APIView):
         bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         description = data.get('description', 'Значение по умолчанию')
-        username = 'username', 'Значение по умолчанию'
-        userSirName = 'userSirName', 'Значение по умолчанию'
-        userPhoneNumber = 'userPhoneNumber', 'Значение по умолчанию'
-        userAdditionalPhoneNumber = 'userAdditionalPhoneNumber', 'Значение по умолчанию'
+        username = data.get('username', 'Значение по умолчанию')
+        userSirName = data.get('userSirName', 'Значение по умолчанию')
+        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
+        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
         address = data.get('address', 'Значение по умолчанию')
         hydra_region_id = address.get('region', 'Значение по умолчанию').get('hydra_id', 'Значение по умолчанию')
         last_key = list(address.keys())[-1]
@@ -99,10 +119,13 @@ class Zayavka(APIView):
         exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
         passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
         passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
-        contact_result = asyncio.run(contact_registr(username, userSirName, userPhoneNumber, userAdditionalPhoneNumber, ))
-        contact_id = contact_result
         location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
 
+        contact_id = asyncio.run(
+            contact_registr(username, userSirName, userPhoneNumber, userAdditionalPhoneNumber ))
+        print('----------------')
+        print(contact_id)
+        print('----------------')
 
         region_id_mapping = {
             'Иссык-Кульская': 29,
@@ -116,9 +139,11 @@ class Zayavka(APIView):
         bx_id = asyncio.run(application_internet(
             bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
             bx_provider_from, description,
-            userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot,region_path_id
+            userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot,region_path_id, contact_id
         ))
+        print('----------------')
         print(bx_id)
+        print('----------------')
 
         hoper_url = 'https://hydra.snt.kg:8000/rest/v2/'
         hoper_login = 'skybot'
@@ -260,6 +285,7 @@ class Zayavka(APIView):
 
                                 'additional_values':
                                     [{'code': 'Продавец', 'name': 'Продавец', 'value': f"hydra.hydra_id_sales"}]
+                                #hydra.hydra_id_sales = агент
                             }
                         }
 
@@ -318,9 +344,6 @@ class Zayavka(APIView):
                         )
                         if response.status_code == 200:
                             search_results = json.loads(response.content)
-                            # a = hydra.ticket_tel
-
-                            # b = hydra.ticket_tel2
 
                             organizations_url = urllib_parse.urljoin(hoper_url,
                                                                      f"subjects/persons/{n_person_id}/addresses/")
@@ -368,7 +391,6 @@ class Zayavka(APIView):
                                     search_results = json.loads(response.content)
                                     print("tel")
                                     print(search_results)
-                                    time.sleep(1)
 
                                     dsn = cx_Oracle.makedsn(host='hydra.snt.kg', port='1521', service_name='hydra')
                                     # Establish the database connection
@@ -424,7 +446,9 @@ class Zayavka(APIView):
                                         dbh.commit()
                                         region_id_value = int(v_region_id.getvalue())
                                         print(f"Создана улица с ID: {region_id_value}")
-
+                                        abon_address_full = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING,
+                                                                      [region_id_value])
+                                        print(f'{abon_address_full}')
                                     dbh.close()
 
                                     organizations_url = urllib_parse.urljoin(hoper_url,
@@ -453,10 +477,10 @@ class Zayavka(APIView):
                                         print(search_results)
 
                                     now = datetime.now()
-                                    test = now.strftime("%Y-%m-%dT%H:%M:%S+06:00")
+                                    time = now.strftime("%Y-%m-%dT%H:%M:%S+06:00")
                                     organizations_url = urllib_parse.urljoin(hoper_url,
                                                                              f"subjects/customers/{n_subject_id}/comments/")
-                                    # asyncio.run(contact_ls(n_subject_id, hydra_ls, contact_id, adress_abon))
+                                    asyncio.run(contact_ls(n_subject_id, hydra_ls, contact_id, abon_address_full))
                                     response = http_session.post(
                                         organizations_url,
                                         timeout=http_timeout,
@@ -465,7 +489,7 @@ class Zayavka(APIView):
 
                                             "comment": {
                                                 "n_comment_type_id": 2082,
-                                                'd_oper': f'{test}',
+                                                'd_oper': f'{time}',
                                                 "cl_comment": f" Ссылка на заявку: http://bitrix24.snt.kg/crm/deal/details/{bx_id}/        UR ls - lsdom",
 
                                                 "n_author_id": 3778825901
@@ -473,7 +497,7 @@ class Zayavka(APIView):
                                         }
 
                                     )
-        return Response({"contact_id":contact_id }, status=200)
+        return Response({"message": "Данные получены"}, status=200)
 
 class Bx_router(APIView):
     def get(self, request):
