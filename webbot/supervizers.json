@@ -1,0 +1,277 @@
+{
+    "agent_core_supervizer": [
+        {
+            "region": "Чуйская",
+            "supervizer_id": 2547,
+            "supervizer_surname": "Минбаев Калыбек",
+            "login": "Minbaev_Kalybek",
+            "password": "Min547!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 2545,
+            "supervizer_surname": "Жолдошбаев Кылымбек",
+            "login": "Zholdoshbaev_Kylymbek",
+            "password": "Zho545!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 2549,
+            "supervizer_surname": "Кермакунов Доорон",
+            "login": "Kermakunov_Dooron",
+            "password": "Ker549!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 2823,
+            "supervizer_surname": "Айтбек уулу Бахтияр",
+            "login": "Aytbek_uulu_Bahtiyar",
+            "password": "Ayt823!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 2773,
+            "supervizer_surname": "Шарафутдинов Эмре",
+            "login": "Sharafutdinov_Emre",
+            "password": "Sha773!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 12678,
+            "supervizer_surname": "Санжар кызы Айдина",
+            "login": "Sanzhar_kyzy_Aydina",
+            "password": "San678!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 2471,
+            "supervizer_surname": "Азат Минбаев",
+            "login": "Azat_Minbaev",
+            "password": "Aza471!"
+        },
+        {
+            "region": "Джалал-Абадская",
+            "supervizer_id": 3281,
+            "supervizer_surname": "Исраилов  Кумарбек",
+            "login": "Israilov__Kumarbek",
+            "password": "Isr281!"
+        },
+        {
+            "region": "Джалал-Абадская",
+            "supervizer_id": 4406,
+            "supervizer_surname": "Бакиев Саматбек",
+            "login": "Bakiev_Samatbek",
+            "password": "Bak406!"
+        },
+        {
+            "region": "Таласская",
+            "supervizer_id": 2639,
+            "supervizer_surname": "Ибраимов Руслан",
+            "login": "Ibraimov_Ruslan",
+            "password": "Ibr639!"
+        },
+        {
+            "region": "Нарынская",
+            "supervizer_id": 2629,
+            "supervizer_surname": "Бактыбеков Асхат ",
+            "login": "Baktybekov_Ashat_",
+            "password": "Bak629!"
+        },
+        {
+            "region": "Иссык-кульская",
+            "supervizer_id": 6968,
+            "supervizer_surname": "Салимжанов Элдияр",
+            "login": "Salimzhanov_Eldiyar",
+            "password": "Sal968!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 16211,
+            "supervizer_surname": "Максат Шакенов",
+            "login": "Maksat_Shakenov",
+            "password": "Mak211!"
+        },
+        {
+            "region": "Ошская",
+            "supervizer_id": 2619,
+            "supervizer_surname": "Кыдыралиев Кайрат",
+            "login": "Kydyraliev_Kayrat",
+            "password": "Kyd619!"
+        },
+        {
+            "region": "Ошская",
+            "supervizer_id": 3512,
+            "supervizer_surname": "Адилет Камалов",
+            "login": "Adilet_Kamalov",
+            "password": "Adi512!"
+        },
+        {
+            "region": "Нарынская",
+            "supervizer_id": 24668,
+            "supervizer_surname": "Карагулов Эрбол",
+            "login": "Karagulov_Erbol",
+            "password": "Kar668!"
+        },
+        {
+            "region": "Ошская",
+            "supervizer_id": 27044,
+            "supervizer_surname": "Баратбек уулу Байэл",
+            "login": "Baratbek_uulu_Bayel",
+            "password": "Bar044!"
+        },
+        {
+            "region": "Иссык-кульская",
+            "supervizer_id": 2657,
+            "supervizer_surname": "Таалайбек кызы Айгерим",
+            "login": "Taalaybek_kyzy_Aygerim",
+            "password": "Taa657!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 7812,
+            "supervizer_surname": "Рахатбек Турдубаев",
+            "login": "Rahatbek_Turdubaev",
+            "password": "Rah812!"
+        },
+        {
+            "region": "Иссык-кульская",
+            "supervizer_id": 32321,
+            "supervizer_surname": "Канатбеков Жолдош",
+            "login": "Kanatbekov_Zholdosh",
+            "password": "Kan321!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 37491,
+            "supervizer_surname": "Асанов Руслан",
+            "login": "Asanov_Ruslan",
+            "password": "Asa491!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 37492,
+            "supervizer_surname": "Калпетов Баяман",
+            "login": "Kalpetov_Bayaman",
+            "password": "Kal492!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 42621,
+            "supervizer_surname": "Кочоров Тилек",
+            "login": "Kochorov_Tilek",
+            "password": "Koc621!"
+        },
+        {
+            "region": "Ошская",
+            "supervizer_id": 2675,
+            "supervizer_surname": "Икирамов Тимурлан",
+            "login": "Ikiramov_Timurlan",
+            "password": "Iki675!"
+        },
+        {
+            "region": "Иссык-кульская",
+            "supervizer_id": 43335,
+            "supervizer_surname": "Кемелов Максат",
+            "login": "Kemelov_Maksat",
+            "password": "Kem335!"
+        },
+        {
+            "region": "Джалал-Абадская",
+            "supervizer_id": 43337,
+            "supervizer_surname": "Нурланбек уулу Шабданбек",
+            "login": "Nurlanbek_uulu_Shabdanbek",
+            "password": "Nur337!"
+        },
+        {
+            "region": "Нарынская",
+            "supervizer_id": 43342,
+            "supervizer_surname": "Ырысбеков Дастан",
+            "login": "Yrysbekov_Dastan",
+            "password": "Yry342!"
+        },
+        {
+            "region": "Джалал-Абадская",
+            "supervizer_id": 141,
+            "supervizer_surname": "Жолдошов Ибраим",
+            "login": "Zholdoshov_Ibraim",
+            "password": "Zho141!"
+        },
+        {
+            "region": "Таласская",
+            "supervizer_id": 43369,
+            "supervizer_surname": "Алыбаев Тынай",
+            "login": "Alybaev_Tynay",
+            "password": "Aly369!"
+        },
+        {
+            "region": "Джалал-Абадская",
+            "supervizer_id": 43348,
+            "supervizer_surname": "Юлдашева Гулнозахон",
+            "login": "Yuldasheva_Gulnozahon",
+            "password": "Yul348!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 43338,
+            "supervizer_surname": "Саткеев Эрнст",
+            "login": "Satkeev_Ernst",
+            "password": "Sat338!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 45315,
+            "supervizer_surname": "Бектурсун уулу Темирлан",
+            "login": "Bektursun_uulu_Temirlan",
+            "password": "Bek315!"
+        },
+        {
+            "region": "Джалал-Абадская",
+            "supervizer_id": 50853,
+            "supervizer_surname": "Узаков Авазбек",
+            "login": "Uzakov_Avazbek",
+            "password": "Uza853!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 4708,
+            "supervizer_surname": "Жанузаков Кайрат",
+            "login": "Zhanuzakov_Kayrat",
+            "password": "Zha708!"
+        },
+        {
+            "region": "Иссык-кульская",
+            "supervizer_id": 53997,
+            "supervizer_surname": "Тыныбек уулу Нурбек",
+            "login": "Tynybek_uulu_Nurbek",
+            "password": "Tyn997!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 56675,
+            "supervizer_surname": "Тынайбеков Турат",
+            "login": "Tynaybekov_Turat",
+            "password": "Tyn675!"
+        },
+        {
+            "region": "Чуйская",
+            "supervizer_id": 43316,
+            "supervizer_surname": "Асанов Бектур",
+            "login": "Asanov_Bektur",
+            "password": "Asa316!"
+        },
+        {
+            "region": "Таласская",
+            "supervizer_id": 43,
+            "supervizer_surname": "Осмонкулов Жанузак",
+            "login": "Osmonkulov_Zhanuzak",
+            "password": "Osm43!"
+        },
+        {
+            "region": "Иссык-кульская",
+            "supervizer_id": 2687,
+            "supervizer_surname": "Алдашев Нурбек",
+            "login": "Aldashev_Nurbek",
+            "password": "Ald687!"
+        }
+    ]
+}
