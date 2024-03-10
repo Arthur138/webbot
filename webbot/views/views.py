@@ -26,6 +26,22 @@ import cx_Oracle
 
 
 
+
+async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon ):
+    webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+    b = BitrixAsync(webhook)
+    method = 'crm.deal.update'
+    params = {
+            'ID': f'{hydra_ls}',
+            'fields': {
+                'UF_CRM_1673255771': hydra_ls}
+    }
+    test = await b.call(method, params)
+    return test
+
+
+
+
 async def contact_registr(name, lastname, mobile, mobile2):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = Bitrix(webhook)
@@ -652,15 +668,4 @@ class Adresses(APIView):
 
 
 
-# async def sms_bitrix_teh(deal_id, n_customer_id):
-#     b = BitrixAsync(webhook)
-#     method = 'crm.timeline.comment.add'
-#     params = {'fields': {
-#             "COMMENT": f"Создан абонент:https://hydra.snt.kg:8000/subjects/persons/edit/{n_customer_id}"
-#             "ENTITY_TYPE": 'deal',
-#             'ENTITY_ID': deal_id,
-
-
-#         }}
-#     test = await b.call(method, params)
 

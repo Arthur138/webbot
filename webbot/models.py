@@ -4,6 +4,7 @@ from fast_bitrix24 import Bitrix
 from django.contrib.auth import get_user_model
 
 
+
 class Location(models.Model):
     hydra_id = models.IntegerField()
     name = models.CharField(max_length=255)
