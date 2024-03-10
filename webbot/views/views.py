@@ -25,6 +25,8 @@ import cx_Oracle
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+
+
 async def deal_hydrals_update(deal_id,hydra_ls):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = BitrixAsync(webhook)
@@ -68,7 +70,7 @@ async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon):
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
                                bx_provider_from, description,
                                userAdditionalPhoneNumber, address, passport1, passport2,
-                               location_screenshot, region_path_id, contact_id):
+                               location_screenshot, region_path_id, contact_id , supervizer_id):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = Bitrix(webhook)
     method = 'crm.deal.add'
@@ -90,7 +92,8 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
         'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
         'CATEGORY_ID': region_path_id,
-        'CONTACT_ID': contact_id
+        'CONTACT_ID': contact_id ,
+        'ASSIGNED_BY_ID': supervizer_id
     }}
     test2 = await b.call(method, test, raw=False)
     print(test2)
