@@ -319,7 +319,7 @@ def create_ls_hydra():
                                                    par_bind_region_id=None,
                                                    realty_good_id=None,
                                                    vc_zip=None,
-                                                   vc_home='Артур дом 2',
+                                                   vc_home='Артур дом 5',
                                                    vc_building=None,
                                                    vc_construct=None,
                                                    vc_ownership=None,
@@ -329,8 +329,12 @@ def create_ls_hydra():
 
                                     dbh.commit()
                                     region_id_value = int(v_region_id.getvalue())
+                                    print('-----------------------------------------')
                                     print(f"Создана улица с ID: {region_id_value}")
-
+                                    visual_code = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING,
+                                                                  [region_id_value])
+                                    print(f'{visual_code}')
+                                    print('-----------------------------------------')
                                 dbh.close()
 
                                 organizations_url = urllib_parse.urljoin(hoper_url,
