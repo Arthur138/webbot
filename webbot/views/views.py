@@ -16,7 +16,6 @@ from rest_framework.parsers import MultiPartParser, FormParser
 import json
 import asyncio
 import requests
-import time
 from venv import logger
 import sys
 from http import HTTPStatus
@@ -39,6 +38,7 @@ async def deal_hydrals_update(deal_id,hydra_ls):
     test = await b.call(method, params)
     return test
 
+
 async def contact_registr(name, lastname, mobile, mobile2):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = Bitrix(webhook)
@@ -51,6 +51,7 @@ async def contact_registr(name, lastname, mobile, mobile2):
     }}
     response = await b.call(method, params)
     return response
+
 
 async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
@@ -66,6 +67,7 @@ async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon):
     }
     test = await b.call(method, params)
     return test
+
 
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
                                bx_provider_from, description,
@@ -119,25 +121,25 @@ class Zayavka(APIView):
         bx_region = data.get('region2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_region_value = data.get('region2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
         bx_district = data.get('district2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
-        bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_tariff = data.get('tariff', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
-        description = data.get('description', 'Значение по умолчанию')
-        username = data.get('username', 'Значение по умолчанию')
-        userSirName = data.get('userSirName', 'Значение по умолчанию')
-        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
-        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
-        address = data.get('address', 'Значение по умолчанию')
-        hydra_region_id = address.get('region', 'Значение по умолчанию').get('hydra_id', 'Значение по умолчанию')
-        last_key = list(address.keys())[-1]
+        bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
+        bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
+        bx_tariff = data.get('tariff', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done 
+        bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
+        bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
+        description = data.get('description', 'Значение по умолчанию') # done
+        username = data.get('username', 'Значение по умолчанию') # done
+        userSirName = data.get('userSirName', 'Значение по умолчанию') # done
+        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию') #done
+        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию') # done
+        address = data.get('address', 'Значение по умолчанию') # done
+        hydra_region_id = address.get('region', 'Значение по умолчанию').get('hydra_id', 'Значение по умолчанию') # done
+        last_key = list(address.keys())[-1] 
         last_value = address[last_key]
         hydra_address = last_value['hydra_id']
         exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
-        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
-        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
-        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
+        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию') # done
+        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию') # done
+        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию') # done
 
         print('----------------')
         contact_id = asyncio.run(

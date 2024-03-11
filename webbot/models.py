@@ -41,6 +41,7 @@ class Supervizor(models.Model):
          verbose_name = 'Супервайзеры'
          verbose_name_plural = 'Супервайзеры'
 
+
 class Agent(models.Model):
     user = models.ForeignKey(get_user_model(), related_name='agent', on_delete=models.CASCADE, verbose_name='Агент')
     bx_id = models.CharField(null=True,blank=True,max_length=100)
@@ -60,6 +61,42 @@ class Agent(models.Model):
         self.supervizer_name = superv
         name = self.surname
 
+
+
+class Zayavka(models.Model):
+    status = models.CharField(max_length=10, default='new')
+    router_installation = models.CharField(max_length=10, default='router')
+    tariff = models.CharField(max_length=50)
+    super_tv_installation = models.CharField(max_length=10, default='tv')
+    description = models.TextField(blank=True, null=True)
+    
+    # Информация об агенте
+    agent = models.ForeignKey(Agent, related_name='applications', on_delete=models.SET_NULL, null=True)
+    
+    # Информация об абоненте
+    hydra_dogovor = models.CharField(max_length=100)
+    previous_provider = models.CharField(max_length=100, blank=True, null=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    primary_phone = models.CharField(max_length=20)
+    secondary_phone = models.CharField(max_length=20, blank=True, null=True)
+    intercom_account = models.CharField(max_length=100, blank=True, null=True)
+    address = models.CharField(max_length=100, blank=True, null=True)
+    hydra_address = models.CharField(max_length=100, blank=True, null=True)
+    hydra_abbon_ls = models.CharField(max_length=100, blank=True, null=True)
+
+    # Ссылки на изображения
+    passport_front_image_url = models.URLField(max_length=200, blank=True, null=True)
+    passport_back_image_url = models.URLField(max_length=200, blank=True, null=True)
+    location_url =  models.URLField(max_length=200, blank=True, null=True)
+
+
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.status}"
+    
+
+    
         # async def main():
         #     if not self.bx_id:
         #          webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
@@ -105,7 +142,7 @@ class Agent(models.Model):
         #
         #             self.bx_id = i['ID']
         # asyncio.run(main2())
-        return super().save(*args, **kwargs)
+        # return super().save(*args, **kwargs)
 
     class Meta:
          verbose_name = 'Агенты'
