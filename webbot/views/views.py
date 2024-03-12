@@ -95,6 +95,7 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
         'CATEGORY_ID': region_path_id,
         'CONTACT_ID': contact_id,
+        'UF_CRM_1673259335'
         'ASSIGNED_BY_ID': supervizer_id,
     }}
     test2 = await b.call(method, test, raw=False)
