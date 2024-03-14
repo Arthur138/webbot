@@ -79,7 +79,6 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
     test = {'fields': {
         'TITLE': 'Заявка на интернет',
         'TYPE_ID': 6667,
-
         'UF_CRM_1674993837284': bx_district,
         'UF_CRM_1673408541': location_screenshot,  # ссылка на локацию ^^
         'UF_CRM_1673408700': passport1,  # ссылка на пасспорт ^^
@@ -95,13 +94,11 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
         'CATEGORY_ID': region_path_id,
         'CONTACT_ID': contact_id,
-        'UF_CRM_1673259335'
         'ASSIGNED_BY_ID': supervizer_id,
     }}
     test2 = await b.call(method, test, raw=False)
     print(test2)
     return test2
-
 
 
 
