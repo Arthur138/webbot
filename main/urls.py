@@ -20,6 +20,8 @@ from webbot.views import Adresses, RegionListView, GetChildrenLocations, get_chi
     bx, CreateZayavka, RegisterView, LoginView, LogoutView, Bx_router, UploadPassportView, \
     CreateSupervizor, CreateAgent, MyZayavki
 
+from webbot.views.neactivka import Bx_neaktivka
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('addresses/', Adresses.as_view()),
@@ -38,4 +40,6 @@ urlpatterns = [
     path('mazay/', MyZayavki.as_view()),
     path('send-data-router/', Bx_router.as_view(), name='send-data-router'),
     path('upload-passport/', UploadPassportView.as_view(), name='upload-passport'),
+
+    path('neactivka/' ,Bx_neaktivka.as_view(),name ='neactivka-reg')
 ]
