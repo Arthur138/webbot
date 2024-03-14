@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 
 
 class Location(models.Model):
-    hydra_id = models.IntegerField()
+    hydra_id = models.BigIntegerField()
     name = models.CharField(max_length=255)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     level = models.IntegerField()
@@ -16,7 +16,7 @@ class Location(models.Model):
         verbose_name_plural = 'Locations'
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name} {self.id}'
 
 
 class Supervizor(models.Model):
@@ -61,6 +61,52 @@ class Agent(models.Model):
         self.supervizer_name = superv
         name = self.surname
 
+        # async def main():
+        #     if not self.bx_id:
+        #          webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+        #          b = Bitrix(webhook)
+        #          method = 'crm.deal.userfield.update'
+        #          params = {
+        #              "id": 1283,
+        #              'fields': {
+        #                  "LIST": [{"VALUE": f'{name}'}]
+        #
+        #              }}
+        #
+        #          test = await b.call(method, params)
+        #     else:
+        #         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+        #         b = Bitrix(webhook)
+        #         method = 'crm.deal.userfield.update'
+        #         params = {
+        #             "id": 1283,
+        #             'fields': {
+        #                 "LIST": [{"ID": f'{self.bx_id}'},
+        #                     {"VALUE": f'{name}'}]
+        #
+        #             }}
+        #
+        #         test = await b.call(method, params)
+        #         return test
+        # asyncio.run(main())
+        #
+        # async def main2():
+        #     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
+        #     b = Bitrix(webhook)
+        #     method = 'crm.deal.userfield.get'
+        #     params = {
+        #         "id": 1283}
+        #
+        #     test = await b.call(method, params)
+        #
+        #     test2 = test['LIST']
+        #     for i in test2:
+        #
+        #         if i['VALUE']==name:
+        #
+        #             self.bx_id = i['ID']
+        # asyncio.run(main2())
+        return super().save(*args, **kwargs)
 
 
 class Zayavka(models.Model):

@@ -22,7 +22,6 @@ from urllib import parse as urllib_parse
 import cx_Oracle
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
 from webbot.serializers import ZayavkaSerializer
 
 
@@ -31,7 +30,10 @@ class MyZayavki(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        agent = Agent.objects.get(user=request.user)
+        try:
+            agent = Agent.objects.get(user=request.user)
+        except Agent.DoesNotExist:
+            return JsonResponse({'error': 'Agent not found'}, status=404)
         zayavki = Zayavka.objects.filter(agent=agent).order_by('-created_at')
         serializer = ZayavkaSerializer(zayavki, many=True)
         return Response(serializer.data, status=200)
@@ -47,7 +49,6 @@ async def deal_hydrals_update(deal_id, hydra_ls, hydra_addr):
             'UF_CRM_1673255771': f'{hydra_ls}',
             'UF_CRM_1674993837284': f'{hydra_addr}'
         },
-
     }
     test = await b.call(method, params)
     return test
@@ -105,7 +106,7 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1669625805213': bx_tv,  # ТВ ^^
         'UF_CRM_1673251826': bx_order_status,  # Статус оплаты ^^
         'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
-        'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
+        'UF_CRM_1675071353': bx_district,  # Лицевой  счет УР ^^
         'CATEGORY_ID': region_path_id,
         'CONTACT_ID': contact_id,
         'ASSIGNED_BY_ID': supervizer_id,
@@ -133,7 +134,7 @@ class CreateZayavka(APIView):
 
         bx_region = data.get('region2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_region_value = data.get('region2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
-        bx_district = data.get('district2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
+        bx_district = data.get('district2', 'Значение по умолчанию')
         bx_order_status = data.get('orderStatus', 'Значение по умолчанию')
         bx_router = data.get('routerInstallationType', 'Значение по умолчанию')
         bx_tariff = data.get('tariff', 'Значение по умолчанию')
@@ -154,12 +155,8 @@ class CreateZayavka(APIView):
         passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')  # done
         location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot',
                                                                               'Значение по умолчанию')  # done
-
-        print('----------------')
         contact_id = asyncio.run(
             contact_registr(username, userSirName, userPhoneNumber, userAdditionalPhoneNumber))
-        print(contact_id)
-        print('----------------')
 
         region_id_mapping = {
             'Иссык-Кульская': 29,
@@ -171,14 +168,14 @@ class CreateZayavka(APIView):
         }
         region_path_id = region_id_mapping[bx_region_value]
         bx_id = asyncio.run(application_internet(
-            bx_region, bx_district, bx_order_status['ID'], bx_router['ID'], bx_tariff['ID'], bx_tv['ID'],
+            bx_region, bx_district['ID'], bx_order_status['ID'], bx_router['ID'], bx_tariff['ID'], bx_tv['ID'],
             bx_provider_from['ID'], description,
             userAdditionalPhoneNumber, address, passport1, passport2, location_screenshot, region_path_id, contact_id,
             supervizer_id, agent_bx_id
         ))
-        print('----------------')
-        print(bx_id)
-        print('----------------')
+        # print('----------------')
+        # print(bx_id)
+        # print('----------------')
 
         hoper_url = 'https://hydra.snt.kg:8000/rest/v2/'
         hoper_login = 'skybot'
@@ -192,7 +189,7 @@ class CreateZayavka(APIView):
             },
         )
         auth_url = urllib_parse.urljoin(hoper_url, 'login')
-        print(auth_url)
+        # print(auth_url)
         auth_params = {'session': {'login': hoper_login, 'password': hoper_password}}
         response = http_session.post(
             auth_url,
@@ -210,7 +207,7 @@ class CreateZayavka(APIView):
 
         auth_result = json.loads(response.content)
         auth_token = auth_result['session']['token']
-        print(auth_token)
+        # print(auth_token)
 
         http_session.headers.update(
             {'Authorization': 'Token token={0}'.format(auth_token)},
@@ -235,7 +232,7 @@ class CreateZayavka(APIView):
             search_results = json.loads(response.content)
             print("fizlico")
             print(search_results)
-
+            n_reseller_id = None
             if hydra_region_id == 51385501:
                 n_reseller_id = 7992244901
             elif hydra_region_id == 51386001:
@@ -248,7 +245,6 @@ class CreateZayavka(APIView):
                 n_reseller_id = 7991945001
             elif hydra_region_id == 51386101:
                 n_reseller_id = 7992048101
-
             print(search_results['person']['n_person_id'])
             n_person_id = search_results['person']['n_person_id']
             # Core_to_hydra.objects.filter(bitrix_deal_id=bitrix_deal_id).update(n_person_id=n_person_id)
@@ -258,7 +254,6 @@ class CreateZayavka(APIView):
                 timeout=http_timeout,
                 json={
                     "customer": {
-
                         "n_base_subject_id": n_person_id,
                         'n_base_subj_type_id': 18001,
                         'n_subj_state_id': 2011,
@@ -267,7 +262,6 @@ class CreateZayavka(APIView):
                         "group_ids": [
                             40231101
                         ],
-
                     }
                 }
             )
@@ -547,7 +541,7 @@ class CreateZayavka(APIView):
                                previous_provider=bx_provider_from['VALUE'],
                                first_name=username, last_name=userSirName, primary_phone=userPhoneNumber,
                                secondary_phone=userAdditionalPhoneNumber,
-                               intercom_account=lsdom, address=bx_region_value + ' ' + bx_district,
+                               intercom_account=lsdom, address=bx_region_value + ' ' + bx_district['VALUE'],
                                hydra_address=abon_address_full,
                                hydra_abbon_ls=hydra_ls, passport_front_image_url=passport1,
                                passport_back_image_url=passport2,
@@ -557,7 +551,7 @@ class CreateZayavka(APIView):
             "hydra_ls": hydra_ls,
             "dogovor": hydra_ls_doc
         }
-        return Response(status=200)
+        return Response(response_data, status=200)
 
 
 class Bx_router(APIView):
