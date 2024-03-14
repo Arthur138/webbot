@@ -42,6 +42,6 @@ urlpatterns = [
     path('upload-passport/', UploadPassportView.as_view(), name='upload-passport'),
 
     path('neactivka/' ,Bx_neaktivka.as_view(),name ='neactivka-reg'),
-    path('neactivka_regions/',Neaktivka_Region.as_view(), name = 'neactivka-regions')
+    path('neactivka_regions/',Neaktivka_Region.as_view(), name = 'neactivka-regions'),
     
 ]
