@@ -24,24 +24,22 @@ class CreateAgent(APIView):
             d = json.load(file)
             # print(d)
             agents = d.get('agent_user_id')
-            for agent in agents:
-                # print(agent)
-                name = agent['surname']
+            for agen in agents:
+                # print(agen)
+                name = agen['surname']
 
                 try:
-                    sv = Supervizor.objects.get(supervizer_hydra_id=agent['supervizer'])
-                    user, created = UserModel.objects.get_or_create(username=agent['login'])
+                    sv = Supervizor.objects.get(supervizer_hydra_id=agen['supervizer'])
+                    user, created = UserModel.objects.get_or_create(username=agen['login'])
                     if created:
-                        user.set_password(agent['password'])
+                        user.set_password(agen['password'])
                         user.save()
-                        agentus = Agent.objects.create(user=user, bx_id=agent['bx_id'], surname=agent['surname'],
-                                                       supervizer=sv, hydra_id_sales=agent['hydra_id_sales'])
-                        agentus.save()
+                        agentus, created = Agent.objects.update_or_create(user=user, bx_id=agen['bx_id'], surname=agen['surname'],
+                                                       supervizer=sv, hydra_id_sales=agen['hydra_id_sales'])
                         print(f'new = {agentus}')
                     elif user:
-                        agentus = Agent.objects.create(user=user, bx_id=agent['bx_id'], surname=agent['surname'],
-                                                       supervizer=sv, hydra_id_sales=agent['hydra_id_sales'])
-                        agentus.save()
+                        agentus, created = Agent.objects.update_or_create(user=user, bx_id=agen['bx_id'], surname=agen['surname'],
+                                                       supervizer=sv, hydra_id_sales=agen['hydra_id_sales'])
                         print(f'^^^^^^^^^^^^^old = {agentus}')
 
                     # user = UserModel.objects.create(username=agent['login'])
@@ -51,11 +49,12 @@ class CreateAgent(APIView):
                     # print(f'{user} --->  {agentus}')
                 except ObjectDoesNotExist:
                     print(f"============================-----------------------------{name}Супер не найден")
+                    continue
 
 
 
 
-                # user = UserModel.objects.create(username=agent['login'])
+                    # user = UserModel.objects.create(username=agent['login'])
                 # user.set_password(agent['password'])
                 # user.save()
                 # agentus = Agent.objects.create(user=user, bx_id=agent['bx_id'], surname=agent['surname'])

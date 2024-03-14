@@ -1,6 +1,6 @@
 from datetime import datetime
 from fast_bitrix24 import Bitrix, BitrixAsync
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from adrf.views import APIView
 from rest_framework import status
@@ -8,8 +8,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from webbot.utils import process_and_save_address_data
 from django.http import JsonResponse
-from webbot.forms import AddressForm
-from webbot.models import Location, Agent
+from webbot.models import Location, Agent, Zayavka
 from webbot.serializers import LocationSerializer
 from telegraph import Telegraph
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -23,17 +22,33 @@ from urllib import parse as urllib_parse
 import cx_Oracle
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from webbot.serializers import ZayavkaSerializer
 
 
+class MyZayavki(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
-async def deal_hydrals_update(deal_id,hydra_ls):
+    def get(self, request):
+        try:
+            agent = Agent.objects.get(user=request.user)
+        except Agent.DoesNotExist:
+            return JsonResponse({'error': 'Agent not found'}, status=404)
+        zayavki = Zayavka.objects.filter(agent=agent).order_by('-created_at')
+        serializer = ZayavkaSerializer(zayavki, many=True)
+        return Response(serializer.data, status=200)
+
+
+async def deal_hydrals_update(deal_id, hydra_ls, hydra_addr):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = BitrixAsync(webhook)
     method = 'crm.deal.update'
     params = {
-            'ID': f'{deal_id}',
-            'fields': {
-                'UF_CRM_1673255771': f'{hydra_ls}'}
+        'ID': f'{deal_id}',
+        'fields': {
+            'UF_CRM_1673255771': f'{hydra_ls}',
+            'UF_CRM_1674993837284': f'{hydra_addr}'
+        },
     }
     test = await b.call(method, params)
     return test
@@ -53,17 +68,17 @@ async def contact_registr(name, lastname, mobile, mobile2):
     return response
 
 
-async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon):
+async def contact_ls(n_subject_id, hydra_ls, contact_id, adress_abon):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = BitrixAsync(webhook)
     method = 'crm.contact.update'
     params = {
-            'ID': f'{contact_id}',
-            'fields': {
-                'UF_CRM_1687325219482': f'{hydra_ls}',
-                'UF_CRM_1674820632467': f'{n_subject_id}',
-                'UF_CRM_1687325330978': f'{adress_abon}'
-            }
+        'ID': f'{contact_id}',
+        'fields': {
+            'UF_CRM_1687325219482': f'{hydra_ls}',
+            'UF_CRM_1674820632467': f'{n_subject_id}',
+            'UF_CRM_1687325330978': f'{adress_abon}'
+        }
     }
     test = await b.call(method, params)
     return test
@@ -72,7 +87,7 @@ async def contact_ls(n_subject_id,hydra_ls,contact_id,adress_abon):
 async def application_internet(bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
                                bx_provider_from, description,
                                userAdditionalPhoneNumber, address, passport1, passport2,
-                               location_screenshot, region_path_id, contact_id, supervizer_id):
+                               location_screenshot, region_path_id, contact_id, supervizer_id, agent_bx_id):
     webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
     b = Bitrix(webhook)
     method = 'crm.deal.add'
@@ -80,7 +95,6 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'TITLE': 'Заявка на интернет',
         'TYPE_ID': 6667,
 
-        'UF_CRM_1674993837284': bx_district,
         'UF_CRM_1673408541': location_screenshot,  # ссылка на локацию ^^
         'UF_CRM_1673408700': passport1,  # ссылка на пасспорт ^^
         'UF_CRM_1673408725': passport2,  # Ссылка  на   паспорт2 ^^
@@ -92,19 +106,18 @@ async def application_internet(bx_region, bx_district, bx_order_status, bx_route
         'UF_CRM_1669625805213': bx_tv,  # ТВ ^^
         'UF_CRM_1673251826': bx_order_status,  # Статус оплаты ^^
         'UF_CRM_1673251960': bx_provider_from,  # Переход от  какого провайдера ^^
-        'UF_CRM_1695971054382': bx_district,  # Лицевой  счет УР ^^
+        'UF_CRM_1675071353': bx_district,  # Лицевой  счет УР ^^
         'CATEGORY_ID': region_path_id,
         'CONTACT_ID': contact_id,
         'ASSIGNED_BY_ID': supervizer_id,
+        'UF_CRM_1673259335': agent_bx_id,
     }}
     test2 = await b.call(method, test, raw=False)
     print(test2)
     return test2
 
 
-
-
-class Zayavka(APIView):
+class CreateZayavka(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -113,39 +126,37 @@ class Zayavka(APIView):
         data = request.data
         print(data)
         agent = get_object_or_404(Agent, user=request.user)
+        agent_bx_id = agent.bx_id
         supervizer = agent.supervizer
         supervizer_id = supervizer.supervizer_hydra_id
         agent_id = agent.hydra_id_sales
-        print(agent_id)
+        lsdom = data.get('domoPhone', 'Значение по умолчанию')
 
         bx_region = data.get('region2', 'Значение по умолчанию').get('ID', 'Значение по умолчанию')
         bx_region_value = data.get('region2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
-        bx_district = data.get('district2', 'Значение по умолчанию').get('VALUE', 'Значение по умолчанию')
-        bx_order_status = data.get('orderStatus', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
-        bx_router = data.get('routerInstallationType', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
-        bx_tariff = data.get('tariff', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done 
-        bx_tv = data.get('superTv', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
-        bx_provider_from = data.get('providerFrom', 'Значение по умолчанию').get('ID', 'Значение по умолчанию') # done
-        description = data.get('description', 'Значение по умолчанию') # done
-        username = data.get('username', 'Значение по умолчанию') # done
-        userSirName = data.get('userSirName', 'Значение по умолчанию') # done
-        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию') #done
-        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию') # done
-        address = data.get('address', 'Значение по умолчанию') # done
-        hydra_region_id = address.get('region', 'Значение по умолчанию').get('hydra_id', 'Значение по умолчанию') # done
-        last_key = list(address.keys())[-1] 
+        bx_district = data.get('district2', 'Значение по умолчанию')
+        bx_order_status = data.get('orderStatus', 'Значение по умолчанию')
+        bx_router = data.get('routerInstallationType', 'Значение по умолчанию')
+        bx_tariff = data.get('tariff', 'Значение по умолчанию')
+        bx_tv = data.get('superTv', 'Значение по умолчанию')
+        bx_provider_from = data.get('providerFrom', 'Значение по умолчанию')
+        description = data.get('description', 'Значение по умолчанию')
+        username = data.get('username', 'Значение по умолчанию')
+        userSirName = data.get('userSirName', 'Значение по умолчанию')
+        userPhoneNumber = data.get('userPhoneNumber', 'Значение по умолчанию')
+        userAdditionalPhoneNumber = data.get('userAdditionalPhoneNumber', 'Значение по умолчанию')
+        address = data.get('address', 'Значение по умолчанию')
+        hydra_region_id = address.get('region', 'Значение по умолчанию').get('hydra_id', 'Значение по умолчанию')
+        last_key = list(address.keys())[-1]
         last_value = address[last_key]
         hydra_address = last_value['hydra_id']
         exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
-        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию') # done
-        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию') # done
-        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию') # done
-
-        print('----------------')
+        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')  # done
+        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')  # done
+        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot',
+                                                                              'Значение по умолчанию')  # done
         contact_id = asyncio.run(
-            contact_registr(username, userSirName, userPhoneNumber, userAdditionalPhoneNumber ))
-        print(contact_id)
-        print('----------------')
+            contact_registr(username, userSirName, userPhoneNumber, userAdditionalPhoneNumber))
 
         region_id_mapping = {
             'Иссык-Кульская': 29,
@@ -157,13 +168,14 @@ class Zayavka(APIView):
         }
         region_path_id = region_id_mapping[bx_region_value]
         bx_id = asyncio.run(application_internet(
-            bx_region, bx_district, bx_order_status, bx_router, bx_tariff, bx_tv,
-            bx_provider_from, description,
-            userAdditionalPhoneNumber, address , passport1 , passport2 , location_screenshot,region_path_id, contact_id, supervizer_id
+            bx_region, bx_district['ID'], bx_order_status['ID'], bx_router['ID'], bx_tariff['ID'], bx_tv['ID'],
+            bx_provider_from['ID'], description,
+            userAdditionalPhoneNumber, address, passport1, passport2, location_screenshot, region_path_id, contact_id,
+            supervizer_id, agent_bx_id
         ))
-        print('----------------')
-        print(bx_id)
-        print('----------------')
+        # print('----------------')
+        # print(bx_id)
+        # print('----------------')
 
         hoper_url = 'https://hydra.snt.kg:8000/rest/v2/'
         hoper_login = 'skybot'
@@ -177,7 +189,7 @@ class Zayavka(APIView):
             },
         )
         auth_url = urllib_parse.urljoin(hoper_url, 'login')
-        print(auth_url)
+        # print(auth_url)
         auth_params = {'session': {'login': hoper_login, 'password': hoper_password}}
         response = http_session.post(
             auth_url,
@@ -195,7 +207,7 @@ class Zayavka(APIView):
 
         auth_result = json.loads(response.content)
         auth_token = auth_result['session']['token']
-        print(auth_token)
+        # print(auth_token)
 
         http_session.headers.update(
             {'Authorization': 'Token token={0}'.format(auth_token)},
@@ -220,7 +232,7 @@ class Zayavka(APIView):
             search_results = json.loads(response.content)
             print("fizlico")
             print(search_results)
-
+            n_reseller_id = None
             if hydra_region_id == 51385501:
                 n_reseller_id = 7992244901
             elif hydra_region_id == 51386001:
@@ -233,7 +245,6 @@ class Zayavka(APIView):
                 n_reseller_id = 7991945001
             elif hydra_region_id == 51386101:
                 n_reseller_id = 7992048101
-
             print(search_results['person']['n_person_id'])
             n_person_id = search_results['person']['n_person_id']
             # Core_to_hydra.objects.filter(bitrix_deal_id=bitrix_deal_id).update(n_person_id=n_person_id)
@@ -243,7 +254,6 @@ class Zayavka(APIView):
                 timeout=http_timeout,
                 json={
                     "customer": {
-
                         "n_base_subject_id": n_person_id,
                         'n_base_subj_type_id': 18001,
                         'n_subj_state_id': 2011,
@@ -252,7 +262,6 @@ class Zayavka(APIView):
                         "group_ids": [
                             40231101
                         ],
-
                     }
                 }
             )
@@ -305,7 +314,7 @@ class Zayavka(APIView):
 
                                 'additional_values':
                                     [{'code': 'Продавец', 'name': 'Продавец', 'value': f"{agent_id}"}]
-                                #hydra.hydra_id_sales = агент
+                                # hydra.hydra_id_sales = агент
                             }
                         }
 
@@ -338,9 +347,14 @@ class Zayavka(APIView):
                         )
                         search_results = json.loads(response.content)
                         print("dogovor active")
+                        print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
                         print(search_results)
+
                         n_contract_id = search_results['contract']['n_doc_id']
+                        print('-------------------------------------------------------------------')
                         hydra_ls_doc = search_results['contract']['vc_doc_no']
+                        print(hydra_ls_doc)
+                        print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
                         # requests.get('https://api.telegram.org/bot{}/sendMessage'.format(api_token),
                         #              params=dict(chat_id=f"{hydra.tg_id}", text=(' Договор №:' + hydra_ls_doc + '\n')
                         #                          ))
@@ -466,8 +480,9 @@ class Zayavka(APIView):
                                         dbh.commit()
                                         region_id_value = int(v_region_id.getvalue())
                                         print(f"Создана улица с ID: {region_id_value}")
-                                        abon_address_full = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING,
-                                                                      [region_id_value])
+                                        abon_address_full = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE",
+                                                                            cx_Oracle.STRING,
+                                                                            [region_id_value])
                                         print(f'{abon_address_full}')
                                     dbh.close()
 
@@ -501,7 +516,7 @@ class Zayavka(APIView):
                                     organizations_url = urllib_parse.urljoin(hoper_url,
                                                                              f"subjects/customers/{n_subject_id}/comments/")
                                     asyncio.run(contact_ls(n_subject_id, hydra_ls, contact_id, abon_address_full))
-                                    asyncio.run(deal_hydrals_update(bx_id, hydra_ls,))
+                                    asyncio.run(deal_hydrals_update(bx_id, hydra_ls, abon_address_full))
 
                                     response = http_session.post(
                                         organizations_url,
@@ -512,22 +527,41 @@ class Zayavka(APIView):
                                             "comment": {
                                                 "n_comment_type_id": 2082,
                                                 'd_oper': f'{time}',
-                                                "cl_comment": f" Ссылка на заявку: http://bitrix24.snt.kg/crm/deal/details/{bx_id}/        UR ls - lsdom",
+                                                "cl_comment": f" Ссылка на заявку: http://bitrix24.snt.kg/crm/deal/details/{bx_id}/        UR ls - {lsdom}",
 
                                                 "n_author_id": 3778825901
                                             }
                                         }
 
                                     )
-        return Response({"message": "Данные получены"}, status=200)
+
+        Zayavka.objects.create(status=bx_order_status['VALUE'], router_installation=bx_router['VALUE'],
+                               tariff=bx_tariff['VALUE'], super_tv_installation=bx_tv['VALUE'],
+                               description=description, agent=agent, hydra_dogovor=hydra_ls_doc,
+                               previous_provider=bx_provider_from['VALUE'],
+                               first_name=username, last_name=userSirName, primary_phone=userPhoneNumber,
+                               secondary_phone=userAdditionalPhoneNumber,
+                               intercom_account=lsdom, address=bx_region_value + ' ' + bx_district['VALUE'],
+                               hydra_address=abon_address_full,
+                               hydra_abbon_ls=hydra_ls, passport_front_image_url=passport1,
+                               passport_back_image_url=passport2,
+                               location_url=location_screenshot
+                               )
+        response_data = {
+            "hydra_ls": hydra_ls,
+            "dogovor": hydra_ls_doc
+        }
+        return Response(response_data, status=200)
+
 
 class Bx_router(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1669625413673','UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826', 'UF_CRM_1673251960', 'UF_CRM_1669625805213','UF_CRM_1669625805213']
+        fields_list = ['UF_CRM_1669625413673', 'UF_CRM_1669625771519', 'UF_CRM_1669634833014', 'UF_CRM_1673251826',
+                       'UF_CRM_1673251960', 'UF_CRM_1669625805213', 'UF_CRM_1669625805213']
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = []
         for field in fields_list:
-            response = requests.get(f'{webhook}crm.deal.fields')  
+            response = requests.get(f'{webhook}crm.deal.fields')
             if response.status_code == 200:
                 fields_info = response.json()
                 for id_field, field_value in fields_info.get('result', {}).items():
@@ -553,7 +587,8 @@ class UploadPassportView(APIView):
                     response = self.upload_and_create_page(file, telegraph, f'Passport Image {i}')
                     responses.append(response)
                 except Exception as e:
-                    return Response({'message': f'Failed to upload {file_key}: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'message': f'Failed to upload {file_key}: {str(e)}'},
+                                    status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'message': f'{file_key} is missing'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -584,16 +619,17 @@ class UploadPassportView(APIView):
 
 class bx(APIView):
     def get(self, request):
-        fields_list = ['UF_CRM_1675072231', 'UF_CRM_1675071171', 'UF_CRM_1675070693', 'UF_CRM_1675071012', 'UF_CRM_1675070436', 'UF_CRM_1675071353' ]
+        fields_list = ['UF_CRM_1675072231', 'UF_CRM_1675071171', 'UF_CRM_1675070693', 'UF_CRM_1675071012',
+                       'UF_CRM_1675070436', 'UF_CRM_1675071353']
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = {}
         region_mapping = {
-        'Чуй':'UF_CRM_1675072231',
-        'Иссык-Куль': 'UF_CRM_1675071171',
-        'Ош': 'UF_CRM_1675070693',
-        'Нарын': 'UF_CRM_1675071012',
-        'Талас': 'UF_CRM_1675070436',
-        'Джалал-Абад': 'UF_CRM_1675071353'
+            'Чуй': 'UF_CRM_1675072231',
+            'Иссык-Куль': 'UF_CRM_1675071171',
+            'Ош': 'UF_CRM_1675070693',
+            'Нарын': 'UF_CRM_1675071012',
+            'Талас': 'UF_CRM_1675070436',
+            'Джалал-Абад': 'UF_CRM_1675071353'
         }
         response = requests.get(f'{webhook}crm.deal.fields')
         if response.status_code == 200:
@@ -621,14 +657,12 @@ class GetChildrenLocations(APIView):
 
     def get(self, request, format=None):
         region_id = request.GET.get('parent_id')
-        children = Location.objects.filter(parent__hydra_id=region_id).values('id', 'name', 'hydra_id')
-        serializer = LocationSerializer(children, many=True)
-        return Response(serializer.data)
-
-
-def address_select_view(request):
-    form = AddressForm()
-    return render(request, 'index.html', {'form': form})
+        if region_id:
+            children = Location.objects.filter(parent__hydra_id=region_id).values('id', 'name', 'hydra_id')
+            serializer = LocationSerializer(children, many=True)
+            return Response(serializer.data)
+        else:
+            return JsonResponse({'error': 'None parent_id'}, status=400)
 
 
 def get_children_locations(request):
@@ -653,10 +687,9 @@ class Adresses(APIView):
         num_N_REGION_ID = [51385901, 51386201, 51386001, 51385801, 51385601, 51386101, 51385501]
 
         with dbh.cursor() as cursor:
-
             cursor.execute("""
                 SELECT *
-                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51386201))
+                FROM TABLE(SR_REGIONS_PKG_S.GET_CHILDREN_REGION_LIST(51385501))
                         """)
 
             rows = cursor.fetchall()
@@ -665,16 +698,6 @@ class Adresses(APIView):
                 id = row[0]
                 visual_code = cursor.callfunc("SR_REGIONS_PKG_S.GET_VISUAL_CODE", cx_Oracle.STRING, [id])
                 print(f'{id} {visual_code} {row}')
-                addresses.append(str(id)+ ' , ' +visual_code)
+                addresses.append(str(id) + ' , ' + visual_code)
             process_and_save_address_data(addresses)
         return Response(status=status.HTTP_200_OK)
-    
-        last_key = list(address.keys())[-1]
-        last_value = address[last_key]
-        hydra_address = last_value['hydra_id']
-        exactaddress = data.get('exactAddress', 'Значение по умолчанию').get('address', 'Значение по умолчанию')
-        passport1 = data.get('assets', 'Значение по умолчанию').get('passport1', 'Значение по умолчанию')
-        passport2 = data.get('assets', 'Значение по умолчанию').get('passport2', 'Значение по умолчанию')
-        location_screenshot = data.get('assets', 'Значение по умолчанию').get('locationScreenShot', 'Значение по умолчанию')
-
-

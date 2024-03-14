@@ -16,14 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from webbot.views import Adresses, address_select_view, RegionListView, GetChildrenLocations, get_children_locations, \
-    bx, Zayavka, RegisterView, LoginView, LogoutView
-from webbot.views import Adresses, address_select_view, RegionListView, GetChildrenLocations, get_children_locations, \
-    bx, Zayavka, RegisterView, LoginView, Bx_router, UploadPassportView, CreateSupervizor, CreateAgent
+from webbot.views import Adresses, RegionListView, GetChildrenLocations, get_children_locations, \
+    bx, CreateZayavka, RegisterView, LoginView, LogoutView, Bx_router, UploadPassportView, \
+    CreateSupervizor, CreateAgent, MyZayavki
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', address_select_view, name='select-address'),
     path('addresses/', Adresses.as_view()),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
@@ -36,10 +34,8 @@ urlpatterns = [
     path('get_child/', GetChildrenLocations.as_view()),
     path('bx/', bx.as_view()),
 
-    path('zayavka/', Zayavka.as_view()),
-
-
-
+    path('z/', CreateZayavka.as_view()),
+    path('mazay/', MyZayavki.as_view()),
     path('send-data-router/', Bx_router.as_view(), name='send-data-router'),
     path('upload-passport/', UploadPassportView.as_view(), name='upload-passport'),
 ]
