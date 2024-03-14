@@ -27,7 +27,7 @@ class Bx_neaktivka(APIView):
                     if field in id_field and field_value['type'] == 'enumeration':
                         items = field_value['items']
                         response_data.append(items)
-        # print(response_data)
+        print(response_data)
         return Response(response_data, status=status.HTTP_200_OK)
 
 
