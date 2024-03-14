@@ -1,10 +1,15 @@
 from rest_framework.validators import UniqueValidator
-from webbot.models import Location
+from webbot.models import Location, Zayavka
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Agent, Supervizor
 
 User = get_user_model()
+
+class ZayavkaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Zayavka
+        fields = '__all__'
 
 class SupervizorSerializer(serializers.ModelSerializer):
     class Meta:
