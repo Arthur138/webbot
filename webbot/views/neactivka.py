@@ -16,7 +16,7 @@ from http import HTTPStatus
 class Bx_neaktivka(APIView):
     def get(self, request):
         fields_list = ['UF_CRM_1669625413673', 'UF_CRM_1674993837284', 'UF_CRM_1681792838630', 'UF_CRM_1681792989530',
-                       'UF_CRM_1669625771519', 'UF_CRM_1681792741017', 'UF_CRM_1673255771']
+                       'UF_CRM_1669625771519', 'UF_CRM_1681792741017', 'UF_CRM_1673255771' , 'UF_CRM_1710486758507' , 'UF_CRM_1682684426172']
         webhook = "https://bitrix24.snt.kg/rest/87/e8rzilwpu7u998y7/"
         response_data = []
         for field in fields_list:
